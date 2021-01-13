@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM amd64/debian
 # FROM ubuntu:xenial
 # FROM google/debian:jessie
 
@@ -8,14 +8,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -qqy \
   && apt-get -qqy install \
-       dumb-init gnupg wget ca-certificates apt-transport-https \
-       ttf-wqy-zenhei \
+  dumb-init gnupg wget ca-certificates apt-transport-https \
+  ttf-wqy-zenhei \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && echo "deb https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+  && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
   && apt-get update -qqy \
-  && apt-get -qqy install google-chrome-unstable \
+  && apt-get -qqy install google-chrome-stable \
   && rm /etc/apt/sources.list.d/google-chrome.list \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
@@ -29,10 +29,10 @@ RUN mkdir /data && chown -R headless:headless /data
 USER headless
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--", \
-            "/usr/bin/google-chrome-unstable", \
-            "--disable-gpu", \
-            "--headless", \
-            "--disable-dev-shm-usage", \
-            "--remote-debugging-address=0.0.0.0", \
-            "--remote-debugging-port=9222", \
-            "--user-data-dir=/data"]
+  "/usr/bin/google-chrome-stable", \
+  "--disable-gpu", \
+  "--headless", \
+  "--disable-dev-shm-usage", \
+  "--remote-debugging-address=0.0.0.0", \
+  "--remote-debugging-port=9222", \
+  "--user-data-dir=/data"]
